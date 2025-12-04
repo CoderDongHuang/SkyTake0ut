@@ -51,8 +51,8 @@ public class AutoFillAspect {
         //实体对象
         Object entity = args[0];
         //准备赋值的数据
-        LocalDateTime time = LocalDateTime.now();
-        Long empId = BaseContext.getCurrentId();
+        LocalDateTime now = LocalDateTime.now();
+        Long currentId = BaseContext.getCurrentId();
 
         if (operationType == OperationType.INSERT) {
             //当前执行的是insert操作，为4个字段赋值
@@ -63,24 +63,24 @@ public class AutoFillAspect {
                 Method setCreateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);
                 Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
                 //通过反射调用目标对象的方法
-                setCreateTime.invoke(entity, time);
-                setUpdateTime.invoke(entity, time);
-                setCreateUser.invoke(entity, empId);
-                setUpdateUser.invoke(entity, empId);
-            } catch (Exception ex) {
-                log.error("公共字段自动填充失败：{}", ex.getMessage());
+                setCreateTime.invoke(entity, now);
+                setCreateUser.invoke(entity, currentId);
+                setUpdateTime.invoke(entity, now);
+                setUpdateUser.invoke(entity, currentId);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }else {
+        }else if(operationType == OperationType.UPDATE){
             //当前执行的是update操作，为2个字段赋值
             try {
                 //获得set方法对象----Method
                 Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
                 Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
                 //通过反射调用目标对象的方法
-                setUpdateTime.invoke(entity, time);
-                setUpdateUser.invoke(entity, empId);
-            } catch (Exception ex) {
-                log.error("公共字段自动填充失败：{}", ex.getMessage());
+                setUpdateTime.invoke(entity, now);
+                setUpdateUser.invoke(entity, currentId);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
